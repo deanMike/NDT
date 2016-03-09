@@ -1,5 +1,8 @@
 package matlab;
 
+import java.io.*;
+
+import main.DataSource;
 import matlabcontrol.*;
 //////////////////////////////////////////////////////////
 // The MatlabHelper class runs the code in Matlab that  //
@@ -14,9 +17,16 @@ public class MatlabHelper {
 	private MatlabProxyFactory factory;
 	private MatlabProxy proxy;
 	
+	PrintWriter fw;
+	
+	private DataSource ds;
+	
 	//Constructor
 	
-	public MatlabHelper() throws MatlabInvocationException {
+	public MatlabHelper() throws MatlabInvocationException, IOException {
+		
+		fw = new PrintWriter("tutorial.m");
+		
 		this.options =
 				new MatlabProxyFactoryOptions.Builder()
 				.setUsePreviouslyControlledSession(true)
@@ -30,8 +40,8 @@ public class MatlabHelper {
 			e.printStackTrace();
 		}
 		
-		proxy.eval("addpath(" + "'./resources/matlab/ndt.1.0.4_exported'" + ")");
-		proxy.eval("add_ndt_paths_and_init_rand_generator");
+		//proxy.eval("addpath(" + "'./resources/matlab/ndt.1.0.4_exported'" + ")");
+		//proxy.eval("add_ndt_paths_and_init_rand_generator");
 		
 		
 		//proxy.eval("toolbox_directory_name = 'C:/Users/Mike/workspace/NDT/resources/matlab/ndt.1.0.4_exported'");
@@ -53,23 +63,59 @@ public class MatlabHelper {
 		return this.matlabFunctionName;
 	}
 	
-	public void BinData(String dataDirectory, String dataFile, int binWidth, int stepSize) throws MatlabInvocationException {
+	public void BinData(String dataDirectory, String dataFile, int binWidth, int stepSize) throws MatlabInvocationException, IOException {
+		if (this.fw == null) throw new IOException();
+		PrintWriter f = this.fw;
+		//System.out.println("create_binned_data_from_raster_data(" + dataDirectory + ", " + dataFile +", " + binWidth+", " + stepSize + ")");
+		//proxy.eval("binned_data_file_name = create_binned_data_from_raster_data('" + dataDirectory + "', '" + dataFile +"', " + binWidth+", " + stepSize + ")");
+		//proxy.eval("load(binned_data_file_name);");
+		//proxy.eval("for i = 0:60 inds_of_sites_with_at_least_k_repeats = find_sites_with_k_label_repetitions(binned_labels.stimulus_ID, i); num_sites_with_k_repeats(i + 1) = length(inds_of_sites_with_at_least_k_repeats);end");
+		f.println("addpath(" + "'./resources/matlab/ndt.1.0.4_exported'" + ")");
+		f.println("add_ndt_paths_and_init_rand_generator");
+		f.println("binned_data_file_name = create_binned_data_from_raster_data('" + dataDirectory + "', '" + dataFile +"', " + binWidth+", " + stepSize + ")");
+		f.println("load(binned_data_file_name);");
+		f.println("for i = 0:60 inds_of_sites_with_at_least_k_repeats = find_sites_with_k_label_repetitions(binned_labels.stimulus_ID, i); num_sites_with_k_repeats(i + 1) = length(inds_of_sites_with_at_least_k_repeats);end");
+		f.println("specific_binned_labels_names = 'stimulus_ID';");
+
+		f.println("num_cv_splits = 20;" 
+
++"ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_splits);"
+
++"the_feature_preprocessors{1} = zscore_normalize_FP;"  
+
++"the_classifier = max_correlation_coefficient_CL;"
+
+
+
++"the_cross_validator = standard_resample_CV(ds, the_classifier, the_feature_preprocessors);" 
+
++"the_cross_validator.num_resample_runs = 2;");
+
+
+//
+//
+//
+//% run the decoding analysis 
+//DECODING_RESULTS = the_cross_validator.run_cv_decoding; 
+//
+//
+//
+//%%  11.  Save the results
+//
+//% save the results
+//save_file_name = 'Zhang_Desimone_basic_7object_results';
+//save(save_file_name, 'DECODING_RESULTS'); 
+//
+//% if logged the code that was run using a log_code_object, save the code
+//%LOGGED_CODE = log_code_obj.return_logged_code_structure;
+//%save(save_file_name, '-v7.3', 'DECODING_RESULTS', 'LOGGED_CODE'); ");
 		
-		System.out.println("create_binned_data_from_raster_data(" + dataDirectory + ", " + dataFile +", " + binWidth+", " + stepSize + ")");
-		proxy.eval("binned_data_file_name = create_binned_data_from_raster_data('" + dataDirectory + "', '" + dataFile +"', " + binWidth+", " + stepSize + ")");
-		proxy.eval("load(binned_data_file_name);");
-		proxy.eval("for i = 0:60 inds_of_sites_with_at_least_k_repeats = find_sites_with_k_label_repetitions(binned_labels.stimulus_ID, i); num_sites_with_k_repeats(i + 1) = length(inds_of_sites_with_at_least_k_repeats);end");
+		f.close();
 	}
 	
+	
 	public static void main(String[] args) throws MatlabConnectionException, MatlabInvocationException{
-		// create proxy
-				
-		 
 		
-
-		// call builtin function
-
-		// call user-defined function (must be on the path)
 		
 	}
 }

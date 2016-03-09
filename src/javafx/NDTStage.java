@@ -64,13 +64,15 @@ public class NDTStage extends Application{
 		if (exit)
 			Platform.exit();
 	}
-	
+		
 	public static void main(String[] args) {
 		// Required for JavaFX
 		launch(args);
-		
 		
 	}
 
 	
 }
+//Standard wrapper interface.
+//50 minutes significant.
+//Which gives the best speed.

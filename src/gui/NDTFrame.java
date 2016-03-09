@@ -9,6 +9,7 @@ import matlab.MatlabHelper;
 import matlabcontrol.MatlabInvocationException;
 
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
 
@@ -64,7 +65,7 @@ public class NDTFrame extends JFrame {
 		try {
 			System.out.println("TRY");
 			matlab.BinData(getDataFolderName(), "BinnedData", getBinWidth(), getStepSize());
-		} catch (MatlabInvocationException e) {
+		} catch (MatlabInvocationException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -88,7 +89,7 @@ public class NDTFrame extends JFrame {
 	 * Create the frame.
 	 * @throws MatlabInvocationException 
 	 */
-	public NDTFrame() throws MatlabInvocationException { 
+	public NDTFrame() throws MatlabInvocationException, IOException { 
 		
 		matlab = new MatlabHelper();
 		//Swing code to create frame and layout
