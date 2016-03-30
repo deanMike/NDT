@@ -1,7 +1,7 @@
-%function introduction_tutorial
+function [] = runTutorial(raster_directory_name, save_prefix_name, bin_width, step_size
 %%  1.  Create strings listing where the toolbox and the tutoral data directories are
 toolbox_directory_name = './resources/matlab/ndt.1.0.4_exported';  % put name of path to the Neural Decoding Toolbox
-raster_data_directory_name = strcat(toolbox_directory_name, '/Zhang_Desimone_7objects_raster_data/');   % put name of path to the raster data
+%raster_data_directory_name = strcat(toolbox_directory_name, '/Zhang_Desimone_7objects_raster_data/');   % put name of path to the raster data
 
 
 
@@ -18,7 +18,6 @@ add_ndt_paths_and_init_rand_generator
 
 %%  4.  Bin the data
 
-save_prefix_name = 'Binned_Zhang_Desimone_7object_data';
 bin_width = 150; 
 step_size = 50;  
 
