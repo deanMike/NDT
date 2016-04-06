@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public class ScriptGenerator {
@@ -14,25 +15,38 @@ public class ScriptGenerator {
 	private BufferedReader br;
 	private BufferedWriter bw;
 	
-	private String template = "/resources/matlab/IntroScriptTemplate";
+	private String template = System.getProperty("user.dir") + "/resources/matlab/IntroScriptTemplate.txt";
+	private String outputScript = System.getProperty("user.dir") + "/output/NDTScript.m";
 	
-	public ScriptGenerator() {
+	public ScriptGenerator(Map<String, String> variables) {
+		System.outPrintln("")
 		try {
-			br = new BufferedReader(new FileReader(new File(template)));
-			bw = new BufferedWriter(new FileWriter(new File("/output/NDTScript.m")));
+			File inputFile = new File(template);
+			File outputFile = new File(outputScript);
+			if (!outputFile.exists()) {
+				outputFile.createNewFile();
+			}
+			br = new BufferedReader(new FileReader(inputFile));
+			bw = new BufferedWriter(new FileWriter(outputFile));
+			
+			String line = br.readLine();
+			
+			while (line != null){
+			
+				for (Map.Entry<String, String> me : variables.entrySet()) {
+					if (line.contains(me.getKey())) {
+						line = line.replaceAll(me.getKey(), me.getValue());
+					};
+				}
+			bw.write(line + "/n");
+			}
+			br.close();
+			bw.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	public void replaceVariables(Map<String, String> variables) {
-	
-	}
-	
-	public static void main(String[] args) {
-		ScriptGenerator sg = new ScriptGenerator();
-		sg.replaceVariables(null);
+		
 	}
 	
 }
