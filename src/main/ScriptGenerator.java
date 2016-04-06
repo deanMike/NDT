@@ -19,7 +19,6 @@ public class ScriptGenerator {
 	private String outputScript = System.getProperty("user.dir") + "/output/NDTScript.m";
 	
 	public ScriptGenerator(Map<String, String> variables) {
-		System.outPrintln("")
 		try {
 			File inputFile = new File(template);
 			File outputFile = new File(outputScript);
@@ -34,11 +33,12 @@ public class ScriptGenerator {
 			while (line != null){
 			
 				for (Map.Entry<String, String> me : variables.entrySet()) {
-					if (line.contains(me.getKey())) {
+					if ((line.contains(me.getKey()) && (me.getValue() != null))) {
 						line = line.replaceAll(me.getKey(), me.getValue());
 					};
 				}
-			bw.write(line + "/n");
+			bw.write(line + "\n");
+			line = br.readLine();
 			}
 			br.close();
 			bw.close();
