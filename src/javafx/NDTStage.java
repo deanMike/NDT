@@ -41,7 +41,7 @@ public class NDTStage extends Application{
 	GridPane grid = new GridPane();
 	
 	
-	private int height = 300, width = 465;
+	private int height = 400, width = 600;
 	private int numProps = 6;
 	
 	String output;
@@ -57,7 +57,7 @@ public class NDTStage extends Application{
 	File dataFolder;
 	File neuronFile;
 	
-	String tbDir, dataPath, neuronName, savePrefix, binLabelName= "Stimulus_ID";
+	String tbDir, rasterDataPath, neuronName, savePrefix, binLabelName= "Stimulus_ID";
 	
 	int binWidth = 150, stepSize = 50, numCVSplits = 20, numResampleRuns = 2, labelRepeatsPerSplit = 2;
 		
@@ -188,8 +188,8 @@ public class NDTStage extends Application{
 		
 		rasterBrowseButton.setOnAction(e -> {
 			dataFolder = dc.showDialog(null);
-			dataPath = dataFolder.getAbsolutePath();
-			fields[1].setText(dataPath);
+			rasterDataPath = dataFolder.getAbsolutePath();
+			fields[1].setText(rasterDataPath);
 		});
 		
 		neuronBrowseButton.setOnAction(e -> {
@@ -206,7 +206,7 @@ public class NDTStage extends Application{
 		
 		
 				
-		dataTextField.setText(dataPath);
+		dataTextField.setText(rasterDataPath);
 		
 		window.setOnCloseRequest(e -> {
 			e.consume();
@@ -388,7 +388,7 @@ public class NDTStage extends Application{
 		Map<String, String> variables = new HashMap<String, String>();
 		
 		variables.put("tbDir", tbDir);
-		variables.put("dataPath", dataPath);
+		variables.put("dataPath", rasterDataPath);
 		variables.put("neuronName", neuronName);
 		variables.put("savePrefix", savePrefix);
 		variables.put("stepSize", Integer.toString(stepSize));
@@ -399,7 +399,7 @@ public class NDTStage extends Application{
 		variables.put("numFeatUse", Integer.toString(numFeatUse));
 		variables.put("classType", classType);
 		variables.put("numResampleRuns",Integer.toString(numResampleRuns));
-		variables.put("dataPath", dataPath);
+		variables.put("dataPath", rasterDataPath);
 		
 		
 		
