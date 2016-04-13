@@ -15,7 +15,7 @@ public class ScriptGenerator {
 	private BufferedReader br;
 	private BufferedWriter bw;
 	
-	private String template = System.getProperty("user.dir") + "/resources/matlab/IntroScriptTemplate.txt";
+	private String template = System.getProperty("user.dir") + "/resources/matlab/decoding_script_to_be_generated.m";
 	private String outputScript = System.getProperty("user.dir") + "/output/NDTScript.m";
 	
 	public ScriptGenerator(Map<String, String> variables) {
@@ -35,6 +35,7 @@ public class ScriptGenerator {
 				for (Map.Entry<String, String> me : variables.entrySet()) {
 					if ((line.contains(me.getKey()) && (me.getValue() != null))) {
 						line = line.replaceAll(me.getKey(), me.getValue());
+						System.out.println(line);
 					};
 				}
 			bw.write(line + "\n");

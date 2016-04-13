@@ -1,0 +1,15 @@
+stimulus_ID
+150
+
+max_correlation_coefficient_CL
+zscore_normalize_FP
+2
+
+20
+25
+2
+C:/Users/Mike/workspace/NDT/resources/matlab/ndt.1.0.4_exported/Zhang_Desimone_7objects_raster_data
+Zhang
+0
+50
+C:/Users/Mike/workspace/NDT/resources/matlab/ndt.1.0.4_exported

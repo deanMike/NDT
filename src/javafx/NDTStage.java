@@ -1,11 +1,17 @@
 package javafx;
 import main.ScriptGenerator;
 
-
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -56,16 +62,30 @@ public class NDTStage extends Application{
 	
 	File dataFolder;
 	File neuronFile;
+	// Binning Data Variables
+	String tbDir, rasterDataPath, binnedDataFileName, neuronName, savePrefix;
+	int binWidth = 150, stepSize = 50;
+	// Datasource Variables
+	String binLabelName= "stimulus_ID";
+	int numCVSplits = 20, labelRepeatsPerSplit = 2;
+	int spikeCounts = 0;
+	// Feature Preprocessor Variables
+	String featurePreprocessorType = "zscore_normalize_FP";
+	/***********************************
+	 * Select or exclude top k features*
+	 ***********************************/
+	int numFeaturesToUse = 25;
+	// Classifier Variables
+	String classType = "max_correlation_coefficient_CL";
 	
-	String tbDir, rasterDataPath, neuronName, savePrefix, binLabelName= "Stimulus_ID";
+	// Cross-Validator Variables
+	int numResampleRuns = 2;
+
 	
-	int binWidth = 150, stepSize = 50, numCVSplits = 20, numResampleRuns = 2, labelRepeatsPerSplit = 2;
 		
-	boolean spikeCounts;
 	
 	int numFeatUse = 25;
 	
-	String classType = "max_correlation_coefficient_CL";
 
 	TextField dataTextField;
 	
@@ -92,6 +112,8 @@ public class NDTStage extends Application{
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		
+		this.readVariables();
 		
 		grid.setHgap(10);
 		grid.setVgap(10);
@@ -176,6 +198,10 @@ public class NDTStage extends Application{
 		dc = new DirectoryChooser();
 		fc = new FileChooser();
 		
+		fields[0].setText(tbDir);
+		fields[1].setText(rasterDataPath);
+		fields[2].setText(neuronName);
+		fields[3].setText(savePrefix);
 		fields[4].setText(Integer.toString(binWidth));
 		fields[5].setText(Integer.toString(stepSize));
 		
@@ -199,6 +225,17 @@ public class NDTStage extends Application{
 			fields[2].setText(neuronName);
 		});
 		
+		fields[3].textProperty().addListener(e -> {
+			savePrefix = fields[3].getText();
+		});
+		
+		fields[4].textProperty().addListener(e -> {
+			binWidth = Integer.parseInt(fields[4].getText());
+		});
+		
+		fields[5].textProperty().addListener(e -> {
+			stepSize = Integer.parseInt(fields[5].getText());
+		});
 		
 		BinData.setOnAction(e -> {
 			sg = new ScriptGenerator(createMap());
@@ -269,7 +306,13 @@ public class NDTStage extends Application{
 		});
 		
 		spikeCheck.selectedProperty().addListener(e -> {
-			spikeCounts = spikeCheck.isSelected();
+			if (classType.equals("poisson_naive_bayes_CL")) {
+				spikeCheck.setSelected(true);
+				spikeCheck.setDisable(true);;
+			} else {
+				spikeCheck.setDisable(false);
+			}
+			spikeCounts = spikeCheck.isSelected() ? 1 : 0;
 			System.out.println(spikeCounts);
 		});
 		
@@ -288,19 +331,29 @@ public class NDTStage extends Application{
 		
 		
 		Label featureNumLabel = new Label("Number of Features to Use");
-				
-		Label[] fpLabels = new Label[] {featureNumLabel};
+		Label featurePreprocessorTypeLabel = new Label("Feature Preprocessor Type");
 		
+		Label[] fpLabels = new Label[] {featurePreprocessorTypeLabel, featureNumLabel};
+		
+		ComboBox<String> featurePreprocessorTypeComboBox = new ComboBox<String>();
+		featurePreprocessorTypeComboBox.getItems().addAll("zscore_normalize_FP", "select_or_exclude_top_k_features_FP");
 		TextField[] fpFields = new TextField[fpLabels.length];
 		
 		for (int i = 0; i < fpFields.length; i++) {
 			fpPane.add(fpLabels[i], 0, i);
 			
 			fpFields[i] = new TextField();
-			fpPane.add(fpFields[i], 1, i);
+			
 		}
-		
+		fpPane.add(fpFields[0], 1, 1);
+		fpPane.add(featurePreprocessorTypeComboBox, 1, 0);
 		fpFields[0].setText(Integer.toString(numFeatUse));
+		
+		featurePreprocessorTypeComboBox.setValue(featurePreprocessorType);
+		
+		featurePreprocessorTypeComboBox.valueProperty().addListener(e -> {
+			featurePreprocessorType = featurePreprocessorTypeComboBox.getValue();
+		});
 		
 		fpFields[0].textProperty().addListener(e -> {
 			numFeatUse = Integer.parseInt(fpFields[0].getText());
@@ -385,29 +438,89 @@ public class NDTStage extends Application{
 	}
 	
 	public Map<String, String> createMap() {
-		Map<String, String> variables = new HashMap<String, String>();
+		Map<String, String> variables = new TreeMap<String, String>();
 		
-		variables.put("tbDir", tbDir);
-		variables.put("dataPath", rasterDataPath);
+		variables.put("tbDir", tbDir.replace(System.getProperty("file.separator"), "/"));
+		variables.put("rasterDataPath", rasterDataPath.replace(System.getProperty("file.separator"), "/"));
+		variables.put("binnedDataFileName", binnedDataFileName);
 		variables.put("neuronName", neuronName);
 		variables.put("savePrefix", savePrefix);
 		variables.put("stepSize", Integer.toString(stepSize));
 		variables.put("binLabelName", binLabelName);
 		variables.put("numCVSplits", Integer.toString(numCVSplits));
-//		variables.put("spikeCounts", spikeCounts);
+		variables.put("spikeCounts", Integer.toString(spikeCounts));
 		variables.put("labelRepeatsPerSplit", Integer.toString(labelRepeatsPerSplit));
 		variables.put("numFeatUse", Integer.toString(numFeatUse));
 		variables.put("classType", classType);
 		variables.put("numResampleRuns",Integer.toString(numResampleRuns));
-		variables.put("dataPath", rasterDataPath);
+		variables.put("binWidth", Integer.toString(binWidth));
+		variables.put("featurePreprocessorType", featurePreprocessorType);
 		
 		
 		
+		writeVariables(variables);
 
 		
 		return variables;
 	}
+	
+	private void writeVariables(Map<String, String> variables) {
 		
+		try {
+		File outputFile = new File("savedVariables.txt");
+		if (!outputFile.exists()) {
+			outputFile.createNewFile();
+		}
+		
+		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
+		
+		for (Map.Entry<String, String> me : variables.entrySet()) {
+				String output = new String("");
+				if (me.getValue() != null)
+					output = me.getValue();
+				bw.write(output);
+				bw.newLine();
+		}
+		bw.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+	
+	private void readVariables() {
+		
+		File inputFile = new File("savedVariables.txt");
+		
+		if (inputFile.exists()) {
+			try {
+	
+				BufferedReader br = new BufferedReader(new FileReader(inputFile));
+				
+				binLabelName = br.readLine();
+				binWidth = Integer.parseInt(br.readLine());
+				binnedDataFileName = br.readLine();
+				classType = br.readLine();
+				labelRepeatsPerSplit = Integer.parseInt(br.readLine());
+				neuronName = br.readLine();
+				numCVSplits = Integer.parseInt(br.readLine());
+				numFeatUse = Integer.parseInt(br.readLine());
+				numResampleRuns = Integer.parseInt(br.readLine());
+				rasterDataPath = br.readLine();
+				savePrefix = br.readLine();
+				spikeCounts = Integer.parseInt(br.readLine()); 
+				stepSize = Integer.parseInt(br.readLine()); 
+				tbDir = br.readLine();
+				
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
 	public static void main(String[] args) {
 		// Required for JavaFX
 		launch(args);

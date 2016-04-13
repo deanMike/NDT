@@ -1,7 +1,7 @@
 
 %%  1.  Create listing of where the toolbox is
 
-toolbox_directory_name = 'tbdir'  % put name of path to the Neural Decoding Toolbox
+toolbox_directory_name = 'tbDir'  % put name of path to the Neural Decoding Toolbox
 
 
 %%  2.  Add the toolbox to Matlab's path       
@@ -16,14 +16,17 @@ add_ndt_paths_and_init_rand_generator
 % Mike: write these lines as commented out lines (as shown below)
 %  run them once to create the Binned file, but in the final code just load the binned data...
 
-% raster_data_directory_name = 'rasterDataPath';   % put name of path to the raster data
-% save_prefix_name = 'savePrefix';
-% bin_width = binWidth; 
-% step_size = stepSize;  
-% binned_data_file_name = create_binned_data_from_raster_data(raster_data_directory_name, save_prefix_name, bin_width, step_size);
- 
+binned_data_file_name = 'binnedDataFileName';
+
+if isempty(binned_data_file_name)
+ raster_data_directory_name = 'rasterDataPath';   % put name of path to the raster data
+ save_prefix_name = 'savePrefix';
+ bin_width = binWidth; 
+ step_size = stepSize;  
+ binned_data_file_name = create_binned_data_from_raster_data(raster_data_directory_name, save_prefix_name, bin_width, step_size);
+end
 % Mike: the hard coded name 'Binned_Zhang_Desimone_7object_data_150ms_bins_50ms_sampled.mat' below can be obtained from the output of the create_binned_data_from_raster_data() function 
-binned_data_file_name = 'Binned_Zhang_Desimone_7object_data_150ms_bins_50ms_sampled.mat';
+
 load(binned_data_file_name)
 
 
@@ -33,10 +36,10 @@ load(binned_data_file_name)
 %%  4.  Create a datasource object
 
 % Define which labels should be used for decoding
-specific_binned_labels_names = 'stimulus_ID';
+specific_binned_labels_names = 'binLabelName';
 
 % Define the number of cross-validation splits to use
-num_cv_splits = 20; 
+num_cv_splits = numCVSplits; 
 
 % Create the datasource object
 ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_splits);
@@ -47,11 +50,11 @@ ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_split
 
 % Mike: if the Poison Naive Bayes is used, then this should replace the line where the data source is created
 % if using the Poison Naive Bayes classifier, load the data as spike counts by setting the load_data_as_spike_counts flag to 1
-%ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_splits, 1);
+%ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_splits, spikeCounts);
 
 % Mike: we can discuss these options more later - you can keep them out of the script for now (or include them as commented lines so we know to come back to them later)
 % can have multiple repetitions of each label in each cross-validation split (which is a faster way to run the code that uses most of the data)
-%ds.num_times_to_repeat_each_label_per_cv_split = 2;
+%ds.num_times_to_repeat_each_label_per_cv_split = labelRepeatsPerSplit;
 
  % optionally can specify particular sites to use
 %ds.sites_to_use = find_sites_with_k_label_repetitions(the_labels_to_use, num_cv_splits);  
@@ -65,14 +68,14 @@ ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_split
 %%  5.  Create a feature preprocessor object
 
 % Create a feature preprocess that z-score normalizes each feature
-the_feature_preprocessors{1} = zscore_normalize_FP;  
+the_feature_preprocessors{1} = featurePreprocessorType;  
 
 
 % Mike: again these lines should only be written if they are specified (and options will depend on which preprocessors are being used)   
 
 % can include a feature-selection features preprocessor to only use the top k most selective neurons
 % fp = select_or_exclude_top_k_features_FP;
-% fp.num_features_to_use = 25;   % use only the 25 most selective neurons as determined by a univariate one-way ANOVA
+% fp.num_features_to_use = numFeaturesToUse;   % use only the 25 most selective neurons as determined by a univariate one-way ANOVA
 % the_feature_preprocessors{2} = fp;
 
 
@@ -81,7 +84,7 @@ the_feature_preprocessors{1} = zscore_normalize_FP;
 %%  6.  Create a classifier object 
 
 % select a classifier
-the_classifier = max_correlation_coefficient_CL;
+the_classifier = classType;
 
 
 % Mike: again which lines are written will depend on the classifier (as dictated by the drop dowm menu you created) 
