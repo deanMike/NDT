@@ -1,4 +1,8 @@
 package javafx;
+import main.Classifier;
+import main.CrossValidator;
+import main.DataSource;
+import main.FeaturePreprocessor;
 import main.ScriptGenerator;
 
 import java.io.BufferedReader;
@@ -7,15 +11,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -26,10 +26,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -47,7 +44,7 @@ public class NDTStage extends Application{
 	GridPane grid = new GridPane();
 	
 	
-	private int height = 400, width = 600;
+	private int height = 650, width = 600;
 	private int numProps = 6;
 	
 	String output;
@@ -99,8 +96,8 @@ public class NDTStage extends Application{
 	Label[] labels;
 	TextField[] fields;
 	
-	Tab mainTab, DSTab, CVTab, FPTab, CLTab;
-	
+	Tab mainTab;
+	NDTTab dsTab, fpTab, clTab, cvTab;
 	Label tbLabel;
 	Label dataLabel;
 	Label neuronLabel;
@@ -126,12 +123,17 @@ public class NDTStage extends Application{
 		neuronBrowseButton = new Button("Browse...");
 		dataTextField = new TextField();
 		mainTab = new Tab("Bin Data");
-		DSTab = new Tab("Data Source");
-		CVTab = new Tab("Cross-Validator");
-		FPTab = new Tab("Feature Preprocessor");
-		CLTab = new Tab("Classifier");
-		tabs.getTabs().addAll(mainTab, DSTab, CVTab, FPTab, CLTab);
-		
+		dsTab = new NDTTab(new DataSource());
+		fpTab = new NDTTab(new FeaturePreprocessor());
+		clTab = new NDTTab(new Classifier());
+		cvTab = new NDTTab(new CrossValidator());
+		//DSTab = new Tab("Data Source");
+		//CVTab = new Tab("Cross-Validator");
+		//FPTab = new Tab("Feature Preprocessor");
+		//CLTab = new Tab("Classifier");
+		tabs.getTabs().addAll(mainTab, dsTab, fpTab, clTab, cvTab);
+		tabs.setTabMaxHeight(this.height);
+		tabs.setTabMaxWidth(this.width);
 		tbLabel = new Label("Toolbox Directory");
 		dataLabel = new Label("Raster Data Path");
 		neuronLabel = new Label("Single Neuron Data File");
@@ -318,117 +320,117 @@ public class NDTStage extends Application{
 		
 
 		
-		DSTab.setContent(dsPane);
+		//DSTab.setContent(dsPane);
 	}
 	
 	public void fillFPTab() {
-		GridPane fpPane = new GridPane();
-		
-		fpPane.setHgap(10);
-		fpPane.setVgap(10);
-		fpPane.setPadding(new Insets(15, 10, 0, 10));
-		
-		
-		
-		Label featureNumLabel = new Label("Number of Features to Use");
-		Label featurePreprocessorTypeLabel = new Label("Feature Preprocessor Type");
-		
-		Label[] fpLabels = new Label[] {featurePreprocessorTypeLabel, featureNumLabel};
-		
-		ComboBox<String> featurePreprocessorTypeComboBox = new ComboBox<String>();
-		featurePreprocessorTypeComboBox.getItems().addAll("zscore_normalize_FP", "select_or_exclude_top_k_features_FP");
-		TextField[] fpFields = new TextField[fpLabels.length];
-		
-		for (int i = 0; i < fpFields.length; i++) {
-			fpPane.add(fpLabels[i], 0, i);
-			
-			fpFields[i] = new TextField();
-			
-		}
-		fpPane.add(fpFields[0], 1, 1);
-		fpPane.add(featurePreprocessorTypeComboBox, 1, 0);
-		fpFields[0].setText(Integer.toString(numFeatUse));
-		
-		featurePreprocessorTypeComboBox.setValue(featurePreprocessorType);
-		
-		featurePreprocessorTypeComboBox.valueProperty().addListener(e -> {
-			featurePreprocessorType = featurePreprocessorTypeComboBox.getValue();
-		});
-		
-		fpFields[0].textProperty().addListener(e -> {
-			numFeatUse = Integer.parseInt(fpFields[0].getText());
-			System.out.println(numFeatUse);
-		});
-		
-		FPTab.setContent(fpPane);
+//		GridPane fpPane = new GridPane();
+//		
+//		fpPane.setHgap(10);
+//		fpPane.setVgap(10);
+//		fpPane.setPadding(new Insets(15, 10, 0, 10));
+//		
+//		
+//		
+//		Label featureNumLabel = new Label("Number of Features to Use");
+//		Label featurePreprocessorTypeLabel = new Label("Feature Preprocessor Type");
+//		
+//		Label[] fpLabels = new Label[] {featurePreprocessorTypeLabel, featureNumLabel};
+//		
+//		ComboBox<String> featurePreprocessorTypeComboBox = new ComboBox<String>();
+//		featurePreprocessorTypeComboBox.getItems().addAll("zscore_normalize_FP", "select_or_exclude_top_k_features_FP");
+//		TextField[] fpFields = new TextField[fpLabels.length];
+//		
+//		for (int i = 0; i < fpFields.length; i++) {
+//			fpPane.add(fpLabels[i], 0, i);
+//			
+//			fpFields[i] = new TextField();
+//			
+//		}
+//		fpPane.add(fpFields[0], 1, 1);
+//		fpPane.add(featurePreprocessorTypeComboBox, 1, 0);
+//		fpFields[0].setText(Integer.toString(numFeatUse));
+//		
+//		featurePreprocessorTypeComboBox.setValue(featurePreprocessorType);
+//		
+//		featurePreprocessorTypeComboBox.valueProperty().addListener(e -> {
+//			featurePreprocessorType = featurePreprocessorTypeComboBox.getValue();
+//		});
+//		
+//		fpFields[0].textProperty().addListener(e -> {
+//			numFeatUse = Integer.parseInt(fpFields[0].getText());
+//			System.out.println(numFeatUse);
+//		});
+//		
+//		FPTab.setContent(fpPane);
 	}
 	
 	public void fillCVTab() {
-		GridPane cvPane = new GridPane();
-		
-		cvPane.setHgap(10);
-		cvPane.setVgap(10);
-		cvPane.setPadding(new Insets(15, 10, 0, 10));
-		
-		
-		
-		Label numResampleLabel = new Label("Number of Resample Runs");
-				
-		Label[] cvLabels = new Label[] {numResampleLabel};
-		
-		TextField[] cvFields = new TextField[cvLabels.length];
-		
-		for (int i = 0; i < cvFields.length; i++) {
-			cvPane.add(cvLabels[i], 0, i);
-			
-			cvFields[i] = new TextField();
-			cvPane.add(cvFields[i], 1, i);
-		}
-		
-		cvFields[0].setText(Integer.toString(numResampleRuns));
-		
-		cvFields[0].textProperty().addListener(e -> {
-			numResampleRuns = Integer.parseInt(cvFields[0].getText());
-			System.out.println(numResampleRuns);
-		});
-		
-		CVTab.setContent(cvPane);
+//		GridPane cvPane = new GridPane();
+//		
+//		cvPane.setHgap(10);
+//		cvPane.setVgap(10);
+//		cvPane.setPadding(new Insets(15, 10, 0, 10));
+//		
+//		
+//		
+//		Label numResampleLabel = new Label("Number of Resample Runs");
+//				
+//		Label[] cvLabels = new Label[] {numResampleLabel};
+//		
+//		TextField[] cvFields = new TextField[cvLabels.length];
+//		
+//		for (int i = 0; i < cvFields.length; i++) {
+//			cvPane.add(cvLabels[i], 0, i);
+//			
+//			cvFields[i] = new TextField();
+//			cvPane.add(cvFields[i], 1, i);
+//		}
+//		
+//		cvFields[0].setText(Integer.toString(numResampleRuns));
+//		
+//		cvFields[0].textProperty().addListener(e -> {
+//			numResampleRuns = Integer.parseInt(cvFields[0].getText());
+//			System.out.println(numResampleRuns);
+//		});
+//		
+//		CVTab.setContent(cvPane);
 	}
 	
 	public void fillCLTab() {
-		GridPane clPane = new GridPane();
-		
-		clPane.setHgap(10);
-		clPane.setVgap(10);
-		clPane.setPadding(new Insets(15, 10, 0, 10));
-		
-		
-		
-		Label numResampleLabel = new Label("Number of Resample Runs");
-				
-		Label[] clLabels = new Label[] {numResampleLabel};
-		
-		TextField[] clFields = new TextField[clLabels.length];
-		
-		ComboBox<String> classTypeCombo = new ComboBox<String>() ;
-		
-		classTypeCombo.getItems().addAll("max_correlation_coefficient_CL", "poisson_naive_bayes_CL", "libsvm_CL");
-		
-		for (int i = 0; i < clFields.length; i++) {
-			clPane.add(clLabels[i], 0, i);
-			
-			clFields[i] = new TextField();
-			clPane.add(classTypeCombo, 1, i);
-		}
-		
-		classTypeCombo.setValue(classType);
-		
-		classTypeCombo.valueProperty().addListener(e -> {
-			classType = classTypeCombo.getValue();
-			System.out.println(classType);
-		});
-				
-		CLTab.setContent(clPane);
+//		GridPane clPane = new GridPane();
+//		
+//		clPane.setHgap(10);
+//		clPane.setVgap(10);
+//		clPane.setPadding(new Insets(15, 10, 0, 10));
+//		
+//		
+//		
+//		Label numResampleLabel = new Label("Number of Resample Runs");
+//				
+//		Label[] clLabels = new Label[] {numResampleLabel};
+//		
+//		TextField[] clFields = new TextField[clLabels.length];
+//		
+//		ComboBox<String> classTypeCombo = new ComboBox<String>() ;
+//		
+//		classTypeCombo.getItems().addAll("max_correlation_coefficient_CL", "poisson_naive_bayes_CL", "libsvm_CL");
+//		
+//		for (int i = 0; i < clFields.length; i++) {
+//			clPane.add(clLabels[i], 0, i);
+//			
+//			clFields[i] = new TextField();
+//			clPane.add(classTypeCombo, 1, i);
+//		}
+//		
+//		classTypeCombo.setValue(classType);
+//		
+//		classTypeCombo.valueProperty().addListener(e -> {
+//			classType = classTypeCombo.getValue();
+//			System.out.println(classType);
+//		});
+//				
+//		CLTab.setContent(clPane);
 	}
 	
 	public void closeProgram() {
@@ -454,7 +456,7 @@ public class NDTStage extends Application{
 		variables.put("classType", classType);
 		variables.put("numResampleRuns",Integer.toString(numResampleRuns));
 		variables.put("binWidth", Integer.toString(binWidth));
-		variables.put("featurePreprocessorType", featurePreprocessorType);
+//		variables.put("featurePreprocessorType", featurePreprocessorType);
 		
 		
 		

@@ -1,14 +1,10 @@
 package gui;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-
-import matlab.MatlabHelper;
-import matlabcontrol.MatlabInvocationException;
 
 public class FPPanel extends JPanel {
 

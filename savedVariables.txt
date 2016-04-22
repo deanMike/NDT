@@ -2,7 +2,6 @@ stimulus_ID
 150
 
 max_correlation_coefficient_CL
-zscore_normalize_FP
 2
 
 20

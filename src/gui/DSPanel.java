@@ -6,13 +6,10 @@ import java.awt.event.ActionListener;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import matlab.MatlabHelper;
-import matlabcontrol.MatlabInvocationException;
 import javax.swing.JTextField;
 
 public class DSPanel extends JPanel {

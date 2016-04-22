@@ -6,7 +6,6 @@ import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JPasswordField;
 
 public class ClassPanel extends JPanel {
 
@@ -35,7 +34,7 @@ public class ClassPanel extends JPanel {
 		add(textField);
 		textField.setColumns(10);
 		
-		JComboBox comboBox = new JComboBox();
+		JComboBox<String> comboBox = new JComboBox<String>();
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Linear", "Polynomial", "Gaussian"}));
 		comboBox.setBounds(207, 87, 86, 20);
 		add(comboBox);

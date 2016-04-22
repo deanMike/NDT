@@ -1,58 +1,82 @@
 package main;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Hashtable;
-
-import javax.swing.JFileChooser;
+import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.Map.Entry;
 
 import com.opencsv.CSVReader;
 
-import javafx.stage.FileChooser;
+import javafx.collections.ObservableList;
 
-public class NDTObject {
+public abstract class NDTObject {
 	
-	private String objectType;
-	
-	private Dictionary<String, Integer> properties;
 	private String subType;
-	private String input;
-	private String defaultDir = "resources/matlab/output";
 	
-	private CSVReader reader;
-	private JFileChooser fc;
+	@SuppressWarnings("unchecked")
+	public ObservableList<String>[] possValues;
 	
-	public NDTObject() {
-		fc = new JFileChooser(defaultDir);
-		fc.showOpenDialog(fc);
-		
-		properties = new Hashtable<String, Integer>();
-		
-		this.input = fc.getSelectedFile().getAbsolutePath();
-		System.out.println(this.input);
+	public String getSubType() {
+		return subType;
+	}
+
+	public void setSubType(String subType) {
+		this.subType = subType;
+	}
+
+	public ObservableList<String> subTypes;
+	
+	protected TreeMap<String, Object> properties = new TreeMap<String, Object>();
+	
+	public TreeMap<String, Object> getProperties() {
+		return properties;
+	}
+
+	private String objType = "Object";
+	
+	
+	public String getObjType() {
+		return objType;
 	}
 	
-	public void readProperties() throws IOException {
-		CSVReader reader = new CSVReader(new FileReader(this.input));
-		String [] nextLine;
-	     while ((nextLine = reader.readNext()) != null) {
-	    	 System.out.println(nextLine[0]);
-	    	 this.properties.put((nextLine[0]), 0);
-	     }
-	     reader.close();
+	public void setObjType(String objType) {
+		this.objType = objType;
+	}
+
+	private String input;
+	
+	public NDTObject() {
+	}
+	public NDTObject(String subType) {
+		//fc = new JFileChooser(defaultDir);
+		//fc.showOpenDialog(fc);
+		
+		//this.input = fc.getSelectedFile().getAbsolutePath();
+		//System.out.println(this.input);
+	}
+		
+	public abstract void buildProperties();
+	
+	public void printProperties(){
+		for (Entry<String, Object> me : properties.entrySet()) {
+			Object output = new String("");
+			if (me.getValue() != null)
+				output = me.getKey() + ": " + me.getValue();
+			System.out.println(output);
+		}
+	}
+	
+	public void deleteProperties() {
+		properties.clear();
 	}
 	
 	public static void main(String[] args) {
-		NDTObject ndto = new NDTObject();
-		try {
-			ndto.readProperties();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			ndto.readProperties();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
 		
 		
 	}

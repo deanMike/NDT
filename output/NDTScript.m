@@ -68,7 +68,7 @@ ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_split
 %%  5.  Create a feature preprocessor object
 
 % Create a feature preprocess that z-score normalizes each feature
-the_feature_preprocessors{1} = zscore_normalize_FP;  
+the_feature_preprocessors{1} = featurePreprocessorType;  
 
 
 % Mike: again these lines should only be written if they are specified (and options will depend on which preprocessors are being used)   
