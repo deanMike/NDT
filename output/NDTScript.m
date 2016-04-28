@@ -1,7 +1,7 @@
 
 %%  1.  Create listing of where the toolbox is
 
-toolbox_directory_name = 'tbDir'  % put name of path to the Neural Decoding Toolbox
+toolbox_directory_name = 'C:UsersMikeMusic'  % put name of path to the Neural Decoding Toolbox
 
 
 %%  2.  Add the toolbox to Matlab's path       
@@ -15,13 +15,13 @@ add_ndt_paths_and_init_rand_generator
 
 %  run them once to create the Binned file, but in the final code just load the binned data...
 
-binned_data_file_name = 'binnedDataFileName';
+binned_data_file_name = '';
 
 if isempty(binned_data_file_name)
- raster_data_directory_name = 'rasterDataPath';   % put name of path to the raster data
- save_prefix_name = 'savePrefix';
- bin_width = binWidth; 
- step_size = stepSize;  
+ raster_data_directory_name = '';   % put name of path to the raster data
+ save_prefix_name = '';
+ bin_width = 150; 
+ step_size = 50;  
  binned_data_file_name = create_binned_data_from_raster_data(raster_data_directory_name, save_prefix_name, bin_width, step_size);
 end
 
@@ -34,10 +34,10 @@ load(binned_data_file_name)
 %%  4.  Create a datasource object
 
 % Define which labels should be used for decoding
-specific_binned_labels_names = 'binLabelName';
+specific_binned_labels_names = '{';
 
 % Define the number of cross-validation splits to use
-num_cv_splits = numCVSplits; 
+num_cv_splits = 20; 
 
 % Create the datasource object
 ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_splits);
@@ -46,16 +46,16 @@ ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_split
 
 
 % if using the Poison Naive Bayes classifier, load the data as spike counts by setting the load_data_as_spike_counts flag to 1
-%ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_splits, spikeCounts);
+%ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_splits, replacespikeCounts);
 
 % can have multiple repetitions of each label in each cross-validation split (which is a faster way to run the code that uses most of the data)
-%ds.num_times_to_repeat_each_label_per_cv_split = labelRepeatsPerSplit;
+%ds.num_times_to_repeat_each_label_per_cv_split = Num Times to Repeat each Label per CV Split;
 
  % optionally can specify particular sites to use
 %ds.sites_to_use = find_sites_with_k_label_repetitions(the_labels_to_use, num_cv_splits);  
 
 % can do the decoding on a subset of labels
-%ds.label_names_to_use =  {'kiwi', 'flower', 'guitar', 'hand'};
+%ds.label_names_to_use =  {;
 
 
 
@@ -63,13 +63,13 @@ ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_split
 %%  5.  Create a feature preprocessor object
 
 % Create a feature preprocess that z-score normalizes each feature
-the_feature_preprocessors{1} = featurePreprocessorType;  
+the_feature_preprocessors{1} = Z-Score Normalize;  
 
 
 
 % can include a feature-selection features preprocessor to only use the top k most selective neurons
 % fp = select_or_exclude_top_k_features_FP;
-% fp.num_features_to_use = numFeaturesToUse;   % use only the 25 most selective neurons as determined by a univariate one-way ANOVA
+% fp.num_features_to_use = replaceNum Features to Use;   % use only the 25 most selective neurons as determined by a univariate one-way ANOVA
 % the_feature_preprocessors{2} = fp;
 
 
@@ -78,7 +78,7 @@ the_feature_preprocessors{1} = featurePreprocessorType;
 %%  6.  Create a classifier object 
 
 % select a classifier
-the_classifier = classType;
+the_classifier = Max Correlation Coefficient;
 
 
 
@@ -95,7 +95,7 @@ the_classifier = classType;
 
 the_cross_validator = standard_resample_CV(ds, the_classifier, the_feature_preprocessors);  
 
-the_cross_validator.num_resample_runs = 2;  % usually more than 2 resample runs are used to get more accurate results, but to save time we are using a small number here
+the_cross_validator.num_resample_runs = 50;  % usually more than 2 resample runs are used to get more accurate results, but to save time we are using a small number here
 
 
 
@@ -122,7 +122,7 @@ DECODING_RESULTS = the_cross_validator.run_cv_decoding;
 
 
 % save the results
-save_file_name = 'Zhang_Desimone_basic_7object_results';
+save_file_name = '';
 save(save_file_name, 'DECODING_RESULTS'); 
 
 

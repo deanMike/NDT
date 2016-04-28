@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class ScriptGenerator {
@@ -16,6 +17,7 @@ public class ScriptGenerator {
 	private String template = System.getProperty("user.dir") + "/resources/matlab/decoding_script_to_be_generated.m";
 	private String outputScript = System.getProperty("user.dir") + "/output/NDTScript.m";
 	
+	@SuppressWarnings("unchecked")
 	public ScriptGenerator(Map<String, Object> variables) {
 		try {
 			File inputFile = new File(template);
@@ -31,10 +33,28 @@ public class ScriptGenerator {
 			while (line != null){
 				System.out.println(variables.size());
 				for (Map.Entry<String, Object> me : variables.entrySet()) {
-					System.out.println(me.getKey() + ": " + me.getValue().toString());
-					if ((line.contains(me.getKey()) && (me.getValue() != null))) {
-						line = line.replaceAll(me.getKey(), me.getValue().toString());
-						System.out.println(line);
+					System.out.println(me.getKey() + ": ");
+					System.out.print(me.getValue().toString());
+					String replaceString = "replace" + me.getKey();
+					if ((line.contains(replaceString) && (me.getValue() != null))) {
+						if(me.getValue().getClass().equals(Boolean.class)) {
+							Integer i = (boolean) me.getValue() ? 1: 0;
+							line = line.replaceAll(replaceString, i.toString()) ;
+						} else if (me.getValue().getClass().equals(ArrayList.class)){
+							ArrayList<String> alStr = (ArrayList<String>)me.getValue();
+							String s = "{";
+							for (String str : alStr){
+								s.concat("'" + str + "'");
+								if (!alStr.get(alStr.size() - 1).equals(str)) {
+									s.concat(",");
+								}
+							}
+							s.concat("}");
+							line = line.replaceAll(replaceString, s);
+						} else {
+							line = line.replaceAll(replaceString, me.getValue().toString());
+							System.out.println(line);
+						}
 					};
 				}
 			bw.write(line + "\n");

@@ -6,11 +6,7 @@ import main.FeaturePreprocessor;
 import main.ScriptGenerator;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -19,7 +15,6 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -51,16 +46,16 @@ public class NDTStage extends Application{
 	
 	Button tbBrowseButton;
 	Button rasterBrowseButton;
-	Button neuronBrowseButton;
+	Button binnedDataBrowseButton;
 	DirectoryChooser dc;
 	FileChooser fc;
 	Image icon;
 	Stage window;
 	
 	File dataFolder;
-	File neuronFile;
+	File binnedDataFile;
 	// Binning Data Variables
-	String tbDir, rasterDataPath, binnedDataFileName, neuronName, savePrefix;
+	String tbDir = "", rasterDataPath = "", binnedDataFileName = "", savePrefix = "";
 	int binWidth = 150, stepSize = 50;
 	// Datasource Variables
 	String binLabelName= "stimulus_ID";
@@ -86,7 +81,7 @@ public class NDTStage extends Application{
 	NDTTab dsTab, fpTab, clTab, cvTab;
 	Label tbLabel;
 	Label dataLabel;
-	Label neuronLabel;
+	Label binnedDataLabel;
 	Label savePrefixLabel;
 	Label binWidthLabel;
 	Label stepSizeLabel;
@@ -106,7 +101,7 @@ public class NDTStage extends Application{
 		tabs = new TabPane();
 		tbBrowseButton = new Button("Browse...");
 		rasterBrowseButton = new Button("Browse...");
-		neuronBrowseButton = new Button("Browse...");
+		binnedDataBrowseButton = new Button("Browse...");
 		dataTextField = new TextField();
 		mainTab = new Tab("Bin Data");
 		
@@ -129,12 +124,12 @@ public class NDTStage extends Application{
 		tabs.setTabMaxWidth(this.width);
 		tbLabel = new Label("Toolbox Directory");
 		dataLabel = new Label("Raster Data Path");
-		neuronLabel = new Label("Single Neuron Data File");
+		binnedDataLabel = new Label("Binned Data File");
 		savePrefixLabel = new Label("Save Prefix");
 		binWidthLabel = new Label("Bin Width");
 		stepSizeLabel = new Label("Step Size");
 		
-		labels = new Label[] {tbLabel, dataLabel, neuronLabel, savePrefixLabel, binWidthLabel, stepSizeLabel};
+		labels = new Label[] {tbLabel, dataLabel, binnedDataLabel, savePrefixLabel, binWidthLabel, stepSizeLabel};
 		fields = new TextField[numProps];
 		
 		
@@ -177,7 +172,7 @@ public class NDTStage extends Application{
 		
 		mainLayout.add(tbBrowseButton, 2, 0);
 		mainLayout.add(rasterBrowseButton, 2, 1);
-		mainLayout.add(neuronBrowseButton, 2, 2);
+		mainLayout.add(binnedDataBrowseButton, 2, 2);
 		mainLayout.add(BinData, 3, 3);
 		mainTab.setContent(mainLayout);
 
@@ -195,7 +190,7 @@ public class NDTStage extends Application{
 		
 		fields[0].setText(tbDir);
 		fields[1].setText(rasterDataPath);
-		fields[2].setText(neuronName);
+		fields[2].setText(binnedDataFileName);
 		fields[3].setText(savePrefix);
 		fields[4].setText(Integer.toString(binWidth));
 		fields[5].setText(Integer.toString(stepSize));
@@ -213,11 +208,11 @@ public class NDTStage extends Application{
 			fields[1].setText(rasterDataPath);
 		});
 		
-		neuronBrowseButton.setOnAction(e -> {
-			neuronFile = fc.showOpenDialog(null);
+		binnedDataBrowseButton.setOnAction(e -> {
+			binnedDataFile = fc.showOpenDialog(null);
 			fc.setSelectedExtensionFilter(new ExtensionFilter("Matlab Object", "mat"));
-			neuronName = neuronFile.getAbsolutePath();
-			fields[2].setText(neuronName);
+			binnedDataFileName = binnedDataFile.getAbsolutePath();
+			fields[2].setText(binnedDataFileName);
 		});
 		
 		fields[3].textProperty().addListener(e -> {
@@ -255,7 +250,18 @@ public class NDTStage extends Application{
 	}	
 	
 	public Map<String, Object> sendProperties() {
-		Map<String, Object> map = DS.getProperties();
+		Map<String, Object> map = new TreeMap<String, Object>();
+		map.put("tbDir", tbDir.replace("\\", File.separator));
+		map.put("rasterDataPath", rasterDataPath.replace("\\", File.separator));
+		map.put("binnedDataFileName", binnedDataFileName.replace("\\", File.separator));
+		map.put("savePrefix", savePrefix.replace("\\", File.separator));
+		map.put("binWidth", binWidth);
+		map.put("stepSize", stepSize);
+		map.put("Datasource Type", DS.getSubType());
+		map.put("Feature Preprocessor Type", FP.getSubType());
+		map.put("Classifier Type", CL.getSubType());
+		map.put("Cross Validator Type", CV.getSubType());
+		map.putAll(DS.getProperties());
 		map.putAll(FP.getProperties());
 		map.putAll(CL.getProperties());
 		map.putAll(CV.getProperties());

@@ -1,20 +1,17 @@
 package main;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.TreeMap;
-import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import com.opencsv.CSVReader;
 
 import javafx.collections.ObservableList;
 
+@SuppressWarnings("unused")
 public abstract class NDTObject {
 	
 	private String subType;
 	
-	@SuppressWarnings("unchecked")
 	public ObservableList<String>[] possValues;
 	
 	public String getSubType() {

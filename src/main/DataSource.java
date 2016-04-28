@@ -1,10 +1,7 @@
 package main;
 
 import java.util.ArrayList;
-import java.util.Map.Entry;
-
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 public class DataSource extends NDTObject{
 	//Enum to define the type of datasource.
@@ -25,6 +22,8 @@ public class DataSource extends NDTObject{
 	public void buildProperties() {
 		//Basic and Shared Datasource properties.
 		properties.clear();
+		properties.putIfAbsent("Specific Binned Labels Names", new ArrayList<String>());
+		properties.putIfAbsent("Num CV Splits", 20);
 		properties.putIfAbsent("Create Simulataneously Recorded Populations", false);
 		properties.putIfAbsent("Sample Sites with Replacement", false);
 		properties.putIfAbsent("Num Times to Repeat each Label per CV Split", 1);
