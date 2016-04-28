@@ -64,25 +64,6 @@ public class NDTStage extends Application{
 	int binWidth = 150, stepSize = 50;
 	// Datasource Variables
 	String binLabelName= "stimulus_ID";
-	int numCVSplits = 20, labelRepeatsPerSplit = 2;
-	int spikeCounts = 0;
-	// Feature Preprocessor Variables
-	String featurePreprocessorType = "zscore_normalize_FP";
-	/***********************************
-	 * Select or exclude top k features*
-	 ***********************************/
-	int numFeaturesToUse = 25;
-	// Classifier Variables
-	String classType = "max_correlation_coefficient_CL";
-	
-	// Cross-Validator Variables
-	int numResampleRuns = 2;
-
-	
-		
-	
-	int numFeatUse = 25;
-	
 
 	TextField dataTextField;
 	
@@ -95,6 +76,11 @@ public class NDTStage extends Application{
 	//HBox[] mainPane, DSPane, CVPane, FPPane, CLPane;
 	Label[] labels;
 	TextField[] fields;
+	
+	DataSource DS;
+	FeaturePreprocessor FP;
+	Classifier CL;
+	CrossValidator CV;
 	
 	Tab mainTab;
 	NDTTab dsTab, fpTab, clTab, cvTab;
@@ -110,7 +96,7 @@ public class NDTStage extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		
-		this.readVariables();
+
 		
 		grid.setHgap(10);
 		grid.setVgap(10);
@@ -123,10 +109,17 @@ public class NDTStage extends Application{
 		neuronBrowseButton = new Button("Browse...");
 		dataTextField = new TextField();
 		mainTab = new Tab("Bin Data");
-		dsTab = new NDTTab(new DataSource());
-		fpTab = new NDTTab(new FeaturePreprocessor());
-		clTab = new NDTTab(new Classifier());
-		cvTab = new NDTTab(new CrossValidator());
+		
+		DS = new DataSource();
+		FP = new FeaturePreprocessor();
+		CL = new Classifier();
+		CV = new CrossValidator();
+		
+		dsTab = new NDTTab(DS);
+		fpTab = new NDTTab(FP);
+		clTab = new NDTTab(CL);
+		cvTab = new NDTTab(CV);
+		
 		//DSTab = new Tab("Data Source");
 		//CVTab = new Tab("Cross-Validator");
 		//FPTab = new Tab("Feature Preprocessor");
@@ -240,7 +233,7 @@ public class NDTStage extends Application{
 		});
 		
 		BinData.setOnAction(e -> {
-			sg = new ScriptGenerator(createMap());
+			new ScriptGenerator(sendProperties());
 		});
 		
 		
@@ -251,275 +244,22 @@ public class NDTStage extends Application{
 			e.consume();
 			closeProgram();
 		});
-		fillDatasourceTab();
-		fillFPTab();
-		fillCVTab();
-		fillCLTab();
 		window.setScene(defaultScene);
 		window.show();
-	}
-	
-	public void fillDatasourceTab() {
-		GridPane dsPane = new GridPane();
-		
-		dsPane.setHgap(10);
-		dsPane.setVgap(10);
-		dsPane.setPadding(new Insets(15, 10, 0, 10));
-		
-		
-		
-		Label binnedNamesLabel = new Label("Specific Binned Label Names");
-		Label numCVLabel = new Label("Number of CV Splits");
-		Label spikeCountsLabel = new Label("Load Data As Spike Counts");
-		Label numRepeatsLabel = new Label("Number of Times to Repeat Each Label per CV Split");
-		
-		Label[] dsLabels = new Label[] {binnedNamesLabel, numCVLabel, spikeCountsLabel, numRepeatsLabel};
-		CheckBox spikeCheck = new CheckBox();
-		
-		TextField[] dsFields = new TextField[dsLabels.length];
-		
-		for (int i = 0; i < dsFields.length; i++) {
-			dsPane.add(dsLabels[i], 0, i);
-			if (!dsLabels[i].equals(spikeCountsLabel)) {
-				dsFields[i] = new TextField();
-				dsPane.add(dsFields[i], 1, i);
-			} else {
-				dsPane.add(spikeCheck, 1, i);
-			}
-		}
-		
-		dsFields[1].setText(Integer.toString(numCVSplits));
-		dsFields[3].setText(Integer.toString(labelRepeatsPerSplit));
-		dsFields[0].setText(binLabelName);
-		
-		dsFields[1].textProperty().addListener(e -> {
-			numCVSplits = Integer.parseInt(dsFields[1].getText());
-			System.out.println(numCVSplits);
-		});
-		
-		dsFields[3].textProperty().addListener(e -> {
-			labelRepeatsPerSplit = Integer.parseInt(dsFields[3].getText());
-			System.out.println(labelRepeatsPerSplit);
-		});
-		
-		dsFields[0].textProperty().addListener(e -> {
-			binLabelName = dsFields[0].getText();
-			System.out.println(binLabelName);
-		});
-		
-		spikeCheck.selectedProperty().addListener(e -> {
-			if (classType.equals("poisson_naive_bayes_CL")) {
-				spikeCheck.setSelected(true);
-				spikeCheck.setDisable(true);;
-			} else {
-				spikeCheck.setDisable(false);
-			}
-			spikeCounts = spikeCheck.isSelected() ? 1 : 0;
-			System.out.println(spikeCounts);
-		});
-		
-
-		
-		//DSTab.setContent(dsPane);
-	}
-	
-	public void fillFPTab() {
-//		GridPane fpPane = new GridPane();
-//		
-//		fpPane.setHgap(10);
-//		fpPane.setVgap(10);
-//		fpPane.setPadding(new Insets(15, 10, 0, 10));
-//		
-//		
-//		
-//		Label featureNumLabel = new Label("Number of Features to Use");
-//		Label featurePreprocessorTypeLabel = new Label("Feature Preprocessor Type");
-//		
-//		Label[] fpLabels = new Label[] {featurePreprocessorTypeLabel, featureNumLabel};
-//		
-//		ComboBox<String> featurePreprocessorTypeComboBox = new ComboBox<String>();
-//		featurePreprocessorTypeComboBox.getItems().addAll("zscore_normalize_FP", "select_or_exclude_top_k_features_FP");
-//		TextField[] fpFields = new TextField[fpLabels.length];
-//		
-//		for (int i = 0; i < fpFields.length; i++) {
-//			fpPane.add(fpLabels[i], 0, i);
-//			
-//			fpFields[i] = new TextField();
-//			
-//		}
-//		fpPane.add(fpFields[0], 1, 1);
-//		fpPane.add(featurePreprocessorTypeComboBox, 1, 0);
-//		fpFields[0].setText(Integer.toString(numFeatUse));
-//		
-//		featurePreprocessorTypeComboBox.setValue(featurePreprocessorType);
-//		
-//		featurePreprocessorTypeComboBox.valueProperty().addListener(e -> {
-//			featurePreprocessorType = featurePreprocessorTypeComboBox.getValue();
-//		});
-//		
-//		fpFields[0].textProperty().addListener(e -> {
-//			numFeatUse = Integer.parseInt(fpFields[0].getText());
-//			System.out.println(numFeatUse);
-//		});
-//		
-//		FPTab.setContent(fpPane);
-	}
-	
-	public void fillCVTab() {
-//		GridPane cvPane = new GridPane();
-//		
-//		cvPane.setHgap(10);
-//		cvPane.setVgap(10);
-//		cvPane.setPadding(new Insets(15, 10, 0, 10));
-//		
-//		
-//		
-//		Label numResampleLabel = new Label("Number of Resample Runs");
-//				
-//		Label[] cvLabels = new Label[] {numResampleLabel};
-//		
-//		TextField[] cvFields = new TextField[cvLabels.length];
-//		
-//		for (int i = 0; i < cvFields.length; i++) {
-//			cvPane.add(cvLabels[i], 0, i);
-//			
-//			cvFields[i] = new TextField();
-//			cvPane.add(cvFields[i], 1, i);
-//		}
-//		
-//		cvFields[0].setText(Integer.toString(numResampleRuns));
-//		
-//		cvFields[0].textProperty().addListener(e -> {
-//			numResampleRuns = Integer.parseInt(cvFields[0].getText());
-//			System.out.println(numResampleRuns);
-//		});
-//		
-//		CVTab.setContent(cvPane);
-	}
-	
-	public void fillCLTab() {
-//		GridPane clPane = new GridPane();
-//		
-//		clPane.setHgap(10);
-//		clPane.setVgap(10);
-//		clPane.setPadding(new Insets(15, 10, 0, 10));
-//		
-//		
-//		
-//		Label numResampleLabel = new Label("Number of Resample Runs");
-//				
-//		Label[] clLabels = new Label[] {numResampleLabel};
-//		
-//		TextField[] clFields = new TextField[clLabels.length];
-//		
-//		ComboBox<String> classTypeCombo = new ComboBox<String>() ;
-//		
-//		classTypeCombo.getItems().addAll("max_correlation_coefficient_CL", "poisson_naive_bayes_CL", "libsvm_CL");
-//		
-//		for (int i = 0; i < clFields.length; i++) {
-//			clPane.add(clLabels[i], 0, i);
-//			
-//			clFields[i] = new TextField();
-//			clPane.add(classTypeCombo, 1, i);
-//		}
-//		
-//		classTypeCombo.setValue(classType);
-//		
-//		classTypeCombo.valueProperty().addListener(e -> {
-//			classType = classTypeCombo.getValue();
-//			System.out.println(classType);
-//		});
-//				
-//		CLTab.setContent(clPane);
 	}
 	
 	public void closeProgram() {
 		boolean exit = ConfirmBox.display("Exit", "Are you sure you want to exit?");
 		if (exit)
 			Platform.exit();
-	}
+	}	
 	
-	public Map<String, String> createMap() {
-		Map<String, String> variables = new TreeMap<String, String>();
-		
-		variables.put("tbDir", tbDir.replace(System.getProperty("file.separator"), "/"));
-		variables.put("rasterDataPath", rasterDataPath.replace(System.getProperty("file.separator"), "/"));
-		variables.put("binnedDataFileName", binnedDataFileName);
-		variables.put("neuronName", neuronName);
-		variables.put("savePrefix", savePrefix);
-		variables.put("stepSize", Integer.toString(stepSize));
-		variables.put("binLabelName", binLabelName);
-		variables.put("numCVSplits", Integer.toString(numCVSplits));
-		variables.put("spikeCounts", Integer.toString(spikeCounts));
-		variables.put("labelRepeatsPerSplit", Integer.toString(labelRepeatsPerSplit));
-		variables.put("numFeatUse", Integer.toString(numFeatUse));
-		variables.put("classType", classType);
-		variables.put("numResampleRuns",Integer.toString(numResampleRuns));
-		variables.put("binWidth", Integer.toString(binWidth));
-//		variables.put("featurePreprocessorType", featurePreprocessorType);
-		
-		
-		
-		writeVariables(variables);
-
-		
-		return variables;
-	}
-	
-	private void writeVariables(Map<String, String> variables) {
-		
-		try {
-		File outputFile = new File("savedVariables.txt");
-		if (!outputFile.exists()) {
-			outputFile.createNewFile();
-		}
-		
-		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
-		
-		for (Map.Entry<String, String> me : variables.entrySet()) {
-				String output = new String("");
-				if (me.getValue() != null)
-					output = me.getValue();
-				bw.write(output);
-				bw.newLine();
-		}
-		bw.close();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-}
-	
-	private void readVariables() {
-		
-		File inputFile = new File("savedVariables.txt");
-		
-		if (inputFile.exists()) {
-			try {
-	
-				BufferedReader br = new BufferedReader(new FileReader(inputFile));
-				
-				binLabelName = br.readLine();
-				binWidth = Integer.parseInt(br.readLine());
-				binnedDataFileName = br.readLine();
-				classType = br.readLine();
-				labelRepeatsPerSplit = Integer.parseInt(br.readLine());
-				neuronName = br.readLine();
-				numCVSplits = Integer.parseInt(br.readLine());
-				numFeatUse = Integer.parseInt(br.readLine());
-				numResampleRuns = Integer.parseInt(br.readLine());
-				rasterDataPath = br.readLine();
-				savePrefix = br.readLine();
-				spikeCounts = Integer.parseInt(br.readLine()); 
-				stepSize = Integer.parseInt(br.readLine()); 
-				tbDir = br.readLine();
-				
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+	public Map<String, Object> sendProperties() {
+		Map<String, Object> map = DS.getProperties();
+		map.putAll(FP.getProperties());
+		map.putAll(CL.getProperties());
+		map.putAll(CV.getProperties());
+		return map;
 	}
 	
 	
