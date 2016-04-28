@@ -32,6 +32,8 @@ public class NDTTab extends Tab {
 	private ArrayList<Label> labels;
 	private ArrayList<Control> controls;
 	
+	public Integer i;
+	
 	
 	
 	public NDTTab(NDTObject obj) {
@@ -108,14 +110,15 @@ public class NDTTab extends Tab {
 				TextField text = new TextField();
 				text.setText(me.getValue().toString());
 				if (me.getValue().getClass().equals(Integer.class)) {
+					i = (Integer) me.getValue();
 					text.textProperty().addListener(e -> {
-						int tempVariable = (Integer)me.getValue();
+						int tempVariable = i;
 						if(text.textProperty().getValue().matches("\\d*")) {
-							me.setValue(text.textProperty());
+							i = Integer.parseInt(text.getText());
+							me.setValue(i);
 						} else {
 							me.setValue(tempVariable);
 						}
-						text.setText((String)me.getValue());
 						System.out.println(me.getKey()+ ": " + me.getValue().toString());
 
 					});

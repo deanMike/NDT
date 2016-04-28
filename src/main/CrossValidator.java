@@ -5,12 +5,12 @@ import javafx.collections.FXCollections;
 public class CrossValidator extends NDTObject {
 	
 	public CrossValidator() {
-		this("Standard Resample");
+		this("standard_resample_CV");
 	}
 	public CrossValidator(String subType) {
 		this.setObjType("Cross-Validator");
 		this.setSubType(subType);
-		this.subTypes = FXCollections.observableArrayList("Standard Resample");
+		this.subTypes = FXCollections.observableArrayList("standard_resample_CV");
 		this.buildProperties();
 	}
 	

@@ -15,13 +15,16 @@ public class ScriptGenerator {
 	private BufferedWriter bw;
 	
 	private String template = System.getProperty("user.dir") + "/resources/matlab/decoding_script_to_be_generated.m";
-	private String outputScript = System.getProperty("user.dir") + "/output/NDTScript.m";
+	private String outputScript = "/NDTScript.m";
+	
+	
 	
 	@SuppressWarnings("unchecked")
-	public ScriptGenerator(Map<String, Object> variables) {
+	public ScriptGenerator(Map<String, Object> variables, String outputPath) {
+		
 		try {
 			File inputFile = new File(template);
-			File outputFile = new File(outputScript);
+			File outputFile = new File(outputPath + outputScript);
 			if (!outputFile.exists()) {
 				outputFile.createNewFile();
 			}
@@ -33,7 +36,7 @@ public class ScriptGenerator {
 			while (line != null){
 				System.out.println(variables.size());
 				for (Map.Entry<String, Object> me : variables.entrySet()) {
-					System.out.println(me.getKey() + ": ");
+					System.out.print("\n" + me.getKey() + ": ");
 					System.out.print(me.getValue().toString());
 					String replaceString = "replace" + me.getKey();
 					if ((line.contains(replaceString) && (me.getValue() != null))) {
@@ -42,15 +45,20 @@ public class ScriptGenerator {
 							line = line.replaceAll(replaceString, i.toString()) ;
 						} else if (me.getValue().getClass().equals(ArrayList.class)){
 							ArrayList<String> alStr = (ArrayList<String>)me.getValue();
-							String s = "{";
-							for (String str : alStr){
-								s.concat("'" + str + "'");
-								if (!alStr.get(alStr.size() - 1).equals(str)) {
-									s.concat(",");
+							if (alStr.size() > 0) {
+								StringBuilder builder = new StringBuilder();
+								builder.append("{");
+								for (String str : alStr){
+									builder.append("'" + str + "'");
+									if (!alStr.get(alStr.size() - 1).equals(str)) {
+										builder.append(",");
+									}
 								}
+								builder.append("}");
+								line = line.replaceAll(replaceString, builder.toString());
+							} else {
+								line.replace(replaceString, "");
 							}
-							s.concat("}");
-							line = line.replaceAll(replaceString, s);
 						} else {
 							line = line.replaceAll(replaceString, me.getValue().toString());
 							System.out.println(line);

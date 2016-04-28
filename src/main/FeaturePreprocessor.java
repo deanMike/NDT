@@ -9,7 +9,7 @@ public class FeaturePreprocessor extends NDTObject {
 	
 	@SuppressWarnings("unchecked")
 	public FeaturePreprocessor() {
-		this("Z-Score Normalize");
+		this("zscore_normalize_FP");
 		possValues = (ObservableList<String>[]) (new ObservableList[1]);
 		possValues[0] = FXCollections.observableArrayList("Linear", "Polynomial", "Gaussian");
 	}
@@ -17,7 +17,7 @@ public class FeaturePreprocessor extends NDTObject {
 	public FeaturePreprocessor(String subType) {
 		this.setObjType("Feature Preprocessor");
 		this.setSubType(subType);
-		this.subTypes = FXCollections.observableArrayList("Z-Score Normalize", "Select or Exclude Top K Features", "Select P-Value Significant Feaures");
+		this.subTypes = FXCollections.observableArrayList("zscore_normalize_FP", "select_or_exclude_top_k_features_FP", "select_pvalue_significant_features_FP");
 	
 		this.buildProperties();
 	}
@@ -27,11 +27,11 @@ public class FeaturePreprocessor extends NDTObject {
 		public void buildProperties() {
 			properties.clear();
 			//Select or Exclude Top K Features Feature Preprocessor properties.
-			if (this.getSubType().equals("Select or Exclude Top K Features")) {
+			if (this.getSubType().equals("select_or_exclude_top_k_features_FP")) {
 				properties.putIfAbsent("Num Features to Exclude", 0);
 				properties.putIfAbsent("Num Features to Use", -1);
 				properties.putIfAbsent("Save Extra Info", false);
-			} else if (this.getSubType().equals("Select P-Value Significant Feaures")) {
+			} else if (this.getSubType().equals("select_pvalue_significant_features_FP")) {
 				properties.putIfAbsent("Save Extra Info", false);
 			}
 	}

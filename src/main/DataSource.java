@@ -8,12 +8,12 @@ public class DataSource extends NDTObject{
 	
 	//Constructor 
 	public DataSource() {
-		this("BasicDS");
+		this("basic_DS");
 	}
 	public DataSource(String subType) {
 		this.setObjType("Data Source");
 		this.setSubType(subType);
-		this.subTypes = FXCollections.observableArrayList("BasicDS", "GeneralizationDS");
+		this.subTypes = FXCollections.observableArrayList("basic_DS", "generalization_DS");
 		
 		this.buildProperties();
 	}
@@ -22,19 +22,19 @@ public class DataSource extends NDTObject{
 	public void buildProperties() {
 		//Basic and Shared Datasource properties.
 		properties.clear();
-		properties.putIfAbsent("Specific Binned Labels Names", new ArrayList<String>());
+		properties.putIfAbsent("Specific Binned Labels Names", "stimulus_ID");
 		properties.putIfAbsent("Num CV Splits", 20);
 		properties.putIfAbsent("Create Simulataneously Recorded Populations", false);
 		properties.putIfAbsent("Sample Sites with Replacement", false);
 		properties.putIfAbsent("Num Times to Repeat each Label per CV Split", 1);
-		properties.putIfAbsent("Label Names to Use", new ArrayList<String>());
+		properties.putIfAbsent("Label Names to Use", "");
 		properties.putIfAbsent("Num Resample Sites", -1);
 		properties.putIfAbsent("Sites to Use", -1);
-		properties.putIfAbsent("Sites to Exclude", new ArrayList<String>());
-		properties.putIfAbsent("Time Periods to Get Data From", new ArrayList<String>());
+		properties.putIfAbsent("Sites to Exclude", "");
+		properties.putIfAbsent("Time Periods to Get Data From", "");
 		properties.putIfAbsent("Randomly Shuffle Labels Before Running", false);
 		//Generalization Datasource properties.
-		if (this.getSubType().equals("GeneralizationDS")){
+		if (this.getSubType().equals("generalization_DS")){
 			properties.putIfAbsent("Use Unique Data in Each Split", false);
 		} 		
 	}

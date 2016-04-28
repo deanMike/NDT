@@ -1,7 +1,7 @@
 
 %%  1.  Create listing of where the toolbox is
 
-toolbox_directory_name = 'C:UsersMikeMusic'  % put name of path to the Neural Decoding Toolbox
+toolbox_directory_name = 'C:/Users/Mike/workspace/NDT/resources/matlab/ndt.1.0.4_exported'  % put name of path to the Neural Decoding Toolbox
 
 
 %%  2.  Add the toolbox to Matlab's path       
@@ -15,11 +15,11 @@ add_ndt_paths_and_init_rand_generator
 
 %  run them once to create the Binned file, but in the final code just load the binned data...
 
-binned_data_file_name = '';
+binned_data_file_name = 'C:/Users/Mike/workspace/NDT/resources/matlab/ndt.1.0.4_exported/Binned_Zhang_Desimone_7object_data_150ms_bins_50ms_sampled.mat';
 
 if isempty(binned_data_file_name)
- raster_data_directory_name = '';   % put name of path to the raster data
- save_prefix_name = '';
+ raster_data_directory_name = 'C:/Users/Mike/workspace/NDT/resources/matlab/ndt.1.0.4_exported/Zhang_Desimone_7objects_raster_data';   % put name of path to the raster data
+ save_prefix_name = 'Zhang';
  bin_width = 150; 
  step_size = 50;  
  binned_data_file_name = create_binned_data_from_raster_data(raster_data_directory_name, save_prefix_name, bin_width, step_size);
@@ -34,7 +34,7 @@ load(binned_data_file_name)
 %%  4.  Create a datasource object
 
 % Define which labels should be used for decoding
-specific_binned_labels_names = '{';
+specific_binned_labels_names = 'stimulus_ID';
 
 % Define the number of cross-validation splits to use
 num_cv_splits = 20; 
@@ -55,7 +55,7 @@ ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_split
 %ds.sites_to_use = find_sites_with_k_label_repetitions(the_labels_to_use, num_cv_splits);  
 
 % can do the decoding on a subset of labels
-%ds.label_names_to_use =  {;
+%ds.label_names_to_use =  ;
 
 
 
@@ -63,7 +63,7 @@ ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_split
 %%  5.  Create a feature preprocessor object
 
 % Create a feature preprocess that z-score normalizes each feature
-the_feature_preprocessors{1} = Z-Score Normalize;  
+the_feature_preprocessors{1} = zscore_normalize_FP;  
 
 
 
@@ -78,7 +78,7 @@ the_feature_preprocessors{1} = Z-Score Normalize;
 %%  6.  Create a classifier object 
 
 % select a classifier
-the_classifier = Max Correlation Coefficient;
+the_classifier = max_correlation_coefficient_CL;
 
 
 
@@ -95,7 +95,7 @@ the_classifier = Max Correlation Coefficient;
 
 the_cross_validator = standard_resample_CV(ds, the_classifier, the_feature_preprocessors);  
 
-the_cross_validator.num_resample_runs = 50;  % usually more than 2 resample runs are used to get more accurate results, but to save time we are using a small number here
+the_cross_validator.num_resample_runs = 10;  % usually more than 2 resample runs are used to get more accurate results, but to save time we are using a small number here
 
 
 
@@ -122,7 +122,7 @@ DECODING_RESULTS = the_cross_validator.run_cv_decoding;
 
 
 % save the results
-save_file_name = '';
+save_file_name = 'Zhang';
 save(save_file_name, 'DECODING_RESULTS'); 
 
 

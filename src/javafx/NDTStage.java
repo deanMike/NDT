@@ -6,7 +6,11 @@ import main.FeaturePreprocessor;
 import main.ScriptGenerator;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -15,68 +19,42 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
-
+/***************************************************************************
+ * This class is the main class to be executed for the Neural Data Toolbox.*
+ * *************************************************************************
+ * NDTStage contains all JavaFX required functions and code.
+ * NDTStage currently also contains all variables necessary for loading data. (To be moved to separate Class).
+ */
 
 
 public class NDTStage extends Application{
-	// Declarations
-	
-	//Create Layout
-	
-	
-	GridPane grid = new GridPane();
-	
-	
-	private int height = 650, width = 600;
-	private int numProps = 6;
-	
-	String output;
-	
-	Button tbBrowseButton;
-	Button rasterBrowseButton;
-	Button binnedDataBrowseButton;
-	DirectoryChooser dc;
-	FileChooser fc;
-	Image icon;
+	/************************
+	 **Create Layout for GUI*
+	 ************************/	
+	//JavaFX Stage, the actual GUI window. 
 	Stage window;
-	
-	File dataFolder;
-	File binnedDataFile;
-	// Binning Data Variables
-	String tbDir = "", rasterDataPath = "", binnedDataFileName = "", savePrefix = "";
-	int binWidth = 150, stepSize = 50;
-	// Datasource Variables
-	String binLabelName= "stimulus_ID";
-
-	TextField dataTextField;
-	
+	//JavaFX Scene, the container for all objects within the stage.
 	Scene defaultScene;
-	TabPane tabs;
-	GridPane mainLayout;
-
-
-	//VBox DSLayout, CVLayout, FPLayout, CLLayout;
-	//HBox[] mainPane, DSPane, CVPane, FPPane, CLPane;
+	//GridPane creates a grid on which JavaFX Controls can be placed
+	GridPane grid = new GridPane();
+	//Label and TextField array to store and iterate over labels.
 	Label[] labels;
 	TextField[] fields;
-	
-	DataSource DS;
-	FeaturePreprocessor FP;
-	Classifier CL;
-	CrossValidator CV;
-	
+	TextField dataTextField;
+	TabPane tabs;
+	GridPane mainLayout;
 	Tab mainTab;
 	NDTTab dsTab, fpTab, clTab, cvTab;
 	Label tbLabel;
@@ -85,24 +63,61 @@ public class NDTStage extends Application{
 	Label savePrefixLabel;
 	Label binWidthLabel;
 	Label stepSizeLabel;
+	//Dimensions of the GUI window.	
+	private int height = 650, width = 600;
+	
+	//Number of properties on the main tab of the GUI.
+	private int numProps = 6;
+	
+	//Buttons and variables to browse for necessary files/directories
+	Button tbBrowseButton;
+	Button rasterBrowseButton;
+	Button binnedDataBrowseButton;
+	DirectoryChooser dc;
+	FileChooser fc;
+	
+	//Image to be used for icon in top-left corner
+	Image icon;
+	
+	
+	//File Objects for locations of Raster Data or Binned Data  
+	File dataFolder;
+	File binnedDataFile;
+	//Data variables, Toolbox directory, Folder with rater data, file with binned data, save prefix for results.
+	String tbDir = "", rasterDataPath = "", binnedDataFileName = "", savePrefix = "";
+	//Data bin width and step size variables
+	int binWidth = 150, stepSize = 50;
+	// Datasource Variables
+	String binLabelName= "stimulus_ID";
+
+	
+
+	
+	
+	DataSource DS;
+	FeaturePreprocessor FP;
+	Classifier CL;
+	CrossValidator CV;
+	
+	
 	
 	ScriptGenerator sg;
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		
-
+		dataTextField = new TextField();
+		loadVariables();
 		
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(0, 10, 0, 10));
 		
 		
+		
 		tabs = new TabPane();
 		tbBrowseButton = new Button("Browse...");
 		rasterBrowseButton = new Button("Browse...");
 		binnedDataBrowseButton = new Button("Browse...");
-		dataTextField = new TextField();
 		mainTab = new Tab("Bin Data");
 		
 		DS = new DataSource();
@@ -122,6 +137,7 @@ public class NDTStage extends Application{
 		tabs.getTabs().addAll(mainTab, dsTab, fpTab, clTab, cvTab);
 		tabs.setTabMaxHeight(this.height);
 		tabs.setTabMaxWidth(this.width);
+		tabs.setMinWidth(tabs.getMaxWidth());
 		tbLabel = new Label("Toolbox Directory");
 		dataLabel = new Label("Raster Data Path");
 		binnedDataLabel = new Label("Binned Data File");
@@ -137,7 +153,7 @@ public class NDTStage extends Application{
 		
 		
 //		mainPane[numProps] = new HBox();
-		Button BinData = new Button("Generate Script");
+		Button GenerateScript = new Button("Generate Script");
 	//	mainPane[numProps].getChildren().add(BinData);
 		
 		for (int i = 0; i < numProps; i++){
@@ -173,13 +189,13 @@ public class NDTStage extends Application{
 		mainLayout.add(tbBrowseButton, 2, 0);
 		mainLayout.add(rasterBrowseButton, 2, 1);
 		mainLayout.add(binnedDataBrowseButton, 2, 2);
-		mainLayout.add(BinData, 3, 3);
+		mainLayout.add(GenerateScript, 2, 6);;
 		mainTab.setContent(mainLayout);
 
 		grid.getChildren().add(tabs);
+		grid.autosize();
 		
 		defaultScene = new Scene(grid, width, height);
-		
 		icon = new Image("file:../../resources/images/brain_icon.png");
 		window = primaryStage;
 		window.setTitle("Neural Decoding Toolbox");
@@ -187,6 +203,11 @@ public class NDTStage extends Application{
 		
 		dc = new DirectoryChooser();
 		fc = new FileChooser();
+		
+		File file = new File(System.getProperty("user.dir"));
+		
+		fc.setInitialDirectory(file);
+		dc.setInitialDirectory(file);
 		
 		fields[0].setText(tbDir);
 		fields[1].setText(rasterDataPath);
@@ -227,12 +248,14 @@ public class NDTStage extends Application{
 			stepSize = Integer.parseInt(fields[5].getText());
 		});
 		
-		BinData.setOnAction(e -> {
-			new ScriptGenerator(sendProperties());
+		GenerateScript.setOnAction(e -> {
+			DirectoryChooser fc1 = new DirectoryChooser();
+			fc1.setInitialDirectory(file);
+			File outputFile = fc1.showDialog(null);
+			new ScriptGenerator(sendProperties(), outputFile.getAbsolutePath());
 		});
 		
 		
-				
 		dataTextField.setText(rasterDataPath);
 		
 		window.setOnCloseRequest(e -> {
@@ -245,8 +268,10 @@ public class NDTStage extends Application{
 	
 	public void closeProgram() {
 		boolean exit = ConfirmBox.display("Exit", "Are you sure you want to exit?");
-		if (exit)
+		if (exit) {
+			saveVariables();
 			Platform.exit();
+		}
 	}	
 	
 	public Map<String, Object> sendProperties() {
@@ -266,6 +291,47 @@ public class NDTStage extends Application{
 		map.putAll(CL.getProperties());
 		map.putAll(CV.getProperties());
 		return map;
+	}
+	
+	public void saveVariables() {
+		String outputPath = System.getProperty("user.dir") + "/input/data"; 
+		try {
+			File outputFile = new File(outputPath);
+			if (!outputFile.exists()) {
+				outputFile.createNewFile();
+			}
+			BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
+			bw.write(tbDir.replace("\\", File.separator));
+			bw.newLine();
+			bw.write(rasterDataPath.replace("\\", File.separator));
+			bw.newLine();
+			bw.write(binnedDataFileName.replace("\\", File.separator));
+			bw.newLine();
+			bw.write(savePrefix.replace("\\", File.separator));
+			
+			bw.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void loadVariables() {
+		String inputPath = System.getProperty("user.dir") + "/input/data"; 
+		try {
+			File inputFile = new File(inputPath);
+
+			BufferedReader br = new BufferedReader(new FileReader(inputFile));
+			tbDir = br.readLine().replace("\\", "/");
+			rasterDataPath = br.readLine().replace("\\", "/");;
+			binnedDataFileName = br.readLine().replace("\\", "/");;
+			savePrefix = br.readLine().replace("\\", "/");;
+			
+			br.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	
