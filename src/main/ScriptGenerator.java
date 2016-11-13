@@ -1,11 +1,6 @@
 package main;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -14,7 +9,7 @@ public class ScriptGenerator {
 	private BufferedReader br;
 	private BufferedWriter bw;
 	
-	private String template = System.getProperty("user.dir") + "/resources/matlab/decoding_script_to_be_generated.m";
+	private String template = "/matlab/decoding_script_to_be_generated.m";
 	private String outputScript = "/NDTScript.m";
 	
 	
@@ -23,12 +18,14 @@ public class ScriptGenerator {
 	public ScriptGenerator(Map<String, Object> variables, String outputPath) {
 		
 		try {
-			File inputFile = new File(template);
+			InputStream inputFile = this.getClass().getResourceAsStream(template);
 			File outputFile = new File(outputPath + outputScript);
+//			File inputFile = new File(template);
+//			File outputFile = new File(outputPath + outputScript);
 			if (!outputFile.exists()) {
 				outputFile.createNewFile();
 			}
-			br = new BufferedReader(new FileReader(inputFile));
+			br = new BufferedReader(new InputStreamReader(inputFile));
 			bw = new BufferedWriter(new FileWriter(outputFile));
 			
 			String line = br.readLine();
