@@ -275,11 +275,11 @@ public class NDTStage extends Application{
 	}	
 	
 	public Map<String, Object> sendProperties() {
-		Map<String, Object> map = new TreeMap<String, Object>();
-		map.put("tbDir", tbDir.replace("\\", File.separator));
-		map.put("rasterDataPath", rasterDataPath.replace("\\", File.separator));
-		map.put("binnedDataFileName", binnedDataFileName.replace("\\", File.separator));
-		map.put("savePrefix", savePrefix.replace("\\", File.separator));
+		Map<String, Object> map = new TreeMap<>();
+		map.put("tbDir", tbDir.replace("\\", "/"));
+		map.put("rasterDataPath", rasterDataPath.replace("\\", "/"));
+		map.put("binnedDataFileName", binnedDataFileName.replace("\\", "/"));
+		map.put("savePrefix", savePrefix.replace("\\", "/"));
 		map.put("binWidth", binWidth);
 		map.put("stepSize", stepSize);
 		map.put("Datasource Type", DS.getSubType());
@@ -301,13 +301,13 @@ public class NDTStage extends Application{
 				outputFile.createNewFile();
 			}
 			BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
-			bw.write(tbDir.replace("\\", File.separator));
+			bw.write(tbDir.replace("\\", "/"));
 			bw.newLine();
-			bw.write(rasterDataPath.replace("\\", File.separator));
+			bw.write(rasterDataPath.replace("\\", "/"));
 			bw.newLine();
-			bw.write(binnedDataFileName.replace("\\", File.separator));
+			bw.write(binnedDataFileName.replace("\\", "/"));
 			bw.newLine();
-			bw.write(savePrefix.replace("\\", File.separator));
+			bw.write(savePrefix.replace("\\", "/"));
 			
 			bw.close();
 			
