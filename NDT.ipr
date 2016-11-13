@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactManager">
+    <artifact type="javafx" name="NDT">
+      <output-path>$PROJECT_DIR$/out/artifacts/NDT</output-path>
+      <properties id="javafx-properties">
+        <options>
+          <option name="appClass" value="javafx.NDTStage" />
+          <option name="description" value="" />
+          <option name="htmlPlaceholderId" value="" />
+          <option name="title" value="" />
+          <option name="vendor" value="" />
+          <option name="version" value="" />
+        </options>
+      </properties>
+      <root id="root">
+        <element id="archive" name="NDT.jar">
+          <element id="module-output" name="NDT" />
+        </element>
+      </root>
+    </artifact>
+  </component>
   <component name="ClientPropertiesManager">
     <properties class="javax.swing.AbstractButton">
       <property name="hideActionText" class="java.lang.Boolean" />

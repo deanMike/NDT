@@ -3,8 +3,6 @@ package main;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import com.opencsv.CSVReader;
-
 import javafx.collections.ObservableList;
 
 @SuppressWarnings("unused")

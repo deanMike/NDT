@@ -5,12 +5,7 @@ import main.DataSource;
 import main.FeaturePreprocessor;
 import main.ScriptGenerator;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -294,41 +289,41 @@ public class NDTStage extends Application{
 	}
 	
 	public void saveVariables() {
-		String outputPath = System.getProperty("user.dir") + "/input/data"; 
-		try {
-			File outputFile = new File(outputPath);
-			if (!outputFile.exists()) {
-				outputFile.createNewFile();
-			}
-			BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
-			bw.write(tbDir.replace("\\", "/"));
-			bw.newLine();
-			bw.write(rasterDataPath.replace("\\", "/"));
-			bw.newLine();
-			bw.write(binnedDataFileName.replace("\\", "/"));
-			bw.newLine();
-			bw.write(savePrefix.replace("\\", "/"));
-			
-			bw.close();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		String outputPath = System.getProperty("user.dir") + "/input/data";
+//		try {
+//			File outputFile = new File(outputPath);
+//			if (!outputFile.exists()) {
+//				outputFile.createNewFile();
+//			}
+//			BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile));
+//			bw.write(tbDir.replace("\\", "/"));
+//			bw.newLine();
+//			bw.write(rasterDataPath.replace("\\", "/"));
+//			bw.newLine();
+//			bw.write(binnedDataFileName.replace("\\", "/"));
+//			bw.newLine();
+//			bw.write(savePrefix.replace("\\", "/"));
+//
+//			bw.close();
+//
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	public void loadVariables() {
-		String inputPath = System.getProperty("user.dir") + "/input/data"; 
+		String inputPath = "/input/data";
 		try {
-			File inputFile = new File(inputPath);
+			InputStream inputFile = this.getClass().getResourceAsStream(inputPath);
 
-			BufferedReader br = new BufferedReader(new FileReader(inputFile));
+			BufferedReader br = new BufferedReader(new InputStreamReader(inputFile));
 			tbDir = br.readLine().replace("\\", "/");
 			rasterDataPath = br.readLine().replace("\\", "/");;
 			binnedDataFileName = br.readLine().replace("\\", "/");;
 			savePrefix = br.readLine().replace("\\", "/");;
-			
+
 			br.close();
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
