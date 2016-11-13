@@ -4,28 +4,29 @@
 toolbox_directory_name = 'replacetbDir'  % put name of path to the Neural Decoding Toolbox
 
 
-%%  2.  Add the toolbox to Matlab's path
+%%  2.  Add the toolbox to Matlab's path       
 
-addpath(toolbox_directory_name)
+addpath(toolbox_directory_name) 
 add_ndt_paths_and_init_rand_generator
 
 
 
-%%  3.  Create/Load the Binned Data
+%%  3.  Create/Load the Binned Data  
 
 %  run them once to create the Binned file, but in the final code just load the binned data...
 
-binned_data_file_name = 'replacerasterDataPath/binned';
+binned_data_file_name = 'replacebinnedDataFileName';
 
 if isempty(binned_data_file_name)
-raster_data_directory_name = 'replacerasterDataPath';   % put name of path to the raster data
-save_prefix_name = 'replacesavePrefix';
-bin_width = replacebinWidth;
-step_size = replacestepSize;
-binned_data_file_name = create_binned_data_from_raster_data(raster_data_directory_name, save_prefix_name, bin_width, step_size);
+ raster_data_directory_name = 'replacerasterDataPath';   % put name of path to the raster data
+ save_prefix_name = 'replacesavePrefix';
+ bin_width = replacebinWidth; 
+ step_size = replacestepSize;  
+ binned_data_file_name = create_binned_data_from_raster_data(raster_data_directory_name, save_prefix_name, bin_width, step_size);
 end
 
 load(binned_data_file_name)
+
 
 
 
@@ -36,7 +37,7 @@ load(binned_data_file_name)
 specific_binned_labels_names = 'replaceSpecific Binned Labels Names';
 
 % Define the number of cross-validation splits to use
-num_cv_splits = replaceNum CV Splits;
+num_cv_splits = replaceNum CV Splits; 
 
 % Create the datasource object
 ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_splits);
@@ -50,8 +51,8 @@ ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_split
 % can have multiple repetitions of each label in each cross-validation split (which is a faster way to run the code that uses most of the data)
 %ds.num_times_to_repeat_each_label_per_cv_split = Num Times to Repeat each Label per CV Split;
 
-% optionally can specify particular sites to use
-%ds.sites_to_use = find_sites_with_k_label_repetitions(the_labels_to_use, num_cv_splits);
+ % optionally can specify particular sites to use
+%ds.sites_to_use = find_sites_with_k_label_repetitions(the_labels_to_use, num_cv_splits);  
 
 % can do the decoding on a subset of labels
 %ds.label_names_to_use =  replaceLabel Names to Use;
@@ -62,7 +63,7 @@ ds = basic_DS(binned_data_file_name, specific_binned_labels_names,  num_cv_split
 %%  5.  Create a feature preprocessor object
 
 % Create a feature preprocess that z-score normalizes each feature
-the_feature_preprocessors{1} = replaceFeature Preprocessor Type;
+the_feature_preprocessors{1} = replaceFeature Preprocessor Type;  
 
 
 
@@ -74,7 +75,7 @@ the_feature_preprocessors{1} = replaceFeature Preprocessor Type;
 
 
 
-%%  6.  Create a classifier object
+%%  6.  Create a classifier object 
 
 % select a classifier
 the_classifier = replaceClassifier Type;
@@ -82,38 +83,38 @@ the_classifier = replaceClassifier Type;
 
 
 % use a poisson naive bayes classifier (note: the data needs to be loaded as spike counts to use this classifier)
-%the_classifier = poisson_naive_bayes_CL;
+%the_classifier = poisson_naive_bayes_CL;  
 
 % use a support vector machine (see the documentation for all the optional parameters for this classifier)
 %the_classifier = libsvm_CL;
 
 
 
-%%  7.  Create the cross-validator
+%%  7.  Create the cross-validator 
 
 
-the_cross_validator = standard_resample_CV(ds, the_classifier, the_feature_preprocessors);
+the_cross_validator = standard_resample_CV(ds, the_classifier, the_feature_preprocessors);  
 
 the_cross_validator.num_resample_runs = replaceNum Resample Runs;  % usually more than 2 resample runs are used to get more accurate results, but to save time we are using a small number here
 
 
 
 % can greatly speed up the run-time of the analysis by not creating a full TCT matrix (i.e., only trainging and testing the classifier on the same time bin)
-% the_cross_validator.test_only_at_training_times = 1;
+% the_cross_validator.test_only_at_training_times = 1;  
 
 
 
 
-%%  8.  Run the decoding analysis
+%%  8.  Run the decoding analysis   
 
-% if calling the code from a script, one can log the code so that one can recreate the results
+% if calling the code from a script, one can log the code so that one can recreate the results 
 %log_code_obj = log_code_object;
-%log_code_obj.log_current_file;
+%log_code_obj.log_current_file; 
 
 
 
-% run the decoding analysis
-DECODING_RESULTS = the_cross_validator.run_cv_decoding;
+% run the decoding analysis 
+DECODING_RESULTS = the_cross_validator.run_cv_decoding; 
 
 
 
@@ -122,7 +123,7 @@ DECODING_RESULTS = the_cross_validator.run_cv_decoding;
 
 % save the results
 save_file_name = 'replacesavePrefix';
-save(save_file_name, 'DECODING_RESULTS');
+save(save_file_name, 'DECODING_RESULTS'); 
 
 
 % if logged the code that was run using a log_code_object, save the code
